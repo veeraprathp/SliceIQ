@@ -37,22 +37,39 @@
         <canvas id="hand-canvas"></canvas>
         <div id="info-container">
             <div id="score-container">Score: <span id="score">0</span></div>
-            <div id="lives-container">Lives: <span id="lives">3</span></div>    
+            <div id="lives-container">Lives: <span id="lives">10</span></div>
+            <div id="feedback-container"></div>
+            <div id="game-question-display"></div>
+        </div>
+        <div id="answer-history">
+            <div id="answer-marks"></div>
         </div>
 
-        <div id="start-screen">
-            <h1>✋Fruit Ninja🥷</h1>
-            <p>Slice fruits with your hands!</p>
+        <div id="topic-screen">
+            <h1>🍉 Quiz Ninja 🥷</h1>
+            <p>AI-generated quiz + hand gesture slicing</p>
+            <div id="topic-input-container">
+                <input type="text" id="topic-input" placeholder="Enter topic... (e.g., Space, Cricket, AI)" />
+                <button id="generate-btn">Generate Quiz ✨</button>
+                <p id="loading-text" style="display:none;">Generating questions...</p>
+            </div>
+        </div>
+
+        <div id="start-screen" style="display:none;">
+            <h1>✋Quiz Ninja🥷</h1>
+            <p>Slice the CORRECT answer with your hand!</p>
             <p>Enable webcam and move your hand in front of the camera</p>
-            <p>Miss a fruit; lose a life</p>
+            <p id="question-display"></p>
             <button id="start-button">Start</button>
         </div>
         
         <div id="game-over">
             <h1>Game Over</h1>
-            <p>Your final score: <span id="final-score">0</span></p>
+            <p>Final Score: <span id="final-score">0</span> pts</p>
+            <p>Correct Answers: <span id="correct-count">0</span>/20</p>
+            <p>Lives Remaining: <span id="remaining-lives">0</span></p>
+            <div id="final-answer-marks" style="margin: 20px 0;"></div>
             <button id="restart-button">Play Again</button>
-            <p>To say hi or send feedback to me: <a href="https://x.com/measure_plan" target="_blank">Twitter</a> / <a href="https://instagram.com/stereo.drift" target="_blank">Instagram</a></p>
         </div>
         
         <div id="loading">
@@ -66,5 +83,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
 
+<script src="quiz.js"></script>
 <script src="game.js"></script>
 </html>

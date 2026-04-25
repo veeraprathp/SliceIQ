@@ -321,41 +321,123 @@ function spawnObject() {
 }
 
 function spawnFruit() {
-    const fruitIndex = Math.floor(Math.random() * fruitGeometries.length);
-    const fruit = new THREE.Mesh(fruitGeometries[fruitIndex], fruitMaterials[fruitIndex]);
-    
-    // Adjust spawn range based on device type
-    let xRange;
-    if (isMobileDevice()) {
-        xRange = gameState.mobileSpawnRange; // Smaller range for mobile
+    // If we're in quiz mode, spawn answer cards instead
+    if (quizState && quizState.questions && quizState.questions.length > 0) {
+        // Only spawn cards once per question
+        if (quizState.answersSpawned) return;
+        quizState.answersSpawned = true;
+
+        const q = getCurrentQuestion();
+        if (!q) return;
+
+        // Spawn 4 answer cards
+        const positions = [-12, -4, 4, 12];
+
+        q.options.forEach((option, idx) => {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Background with gradient
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#4444ff');
+            gradient.addColorStop(1, '#2222dd');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Border
+            ctx.strokeStyle = '#00ffff';
+            ctx.lineWidth = 8;
+            ctx.strokeRect(4, 4, canvas.width - 8, canvas.height - 8);
+
+            // Text
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            // Wrap text if too long
+            const maxWidth = canvas.width - 40;
+            const words = option.split(' ');
+            let lines = [];
+            let currentLine = '';
+            for (let word of words) {
+              if (ctx.measureText(currentLine + word).width > maxWidth) {
+                if (currentLine) lines.push(currentLine.trim());
+                currentLine = word;
+              } else {
+                currentLine += ' ' + word;
+              }
+            }
+            if (currentLine) lines.push(currentLine.trim());
+
+            const lineHeight = 60;
+            const totalHeight = lines.length * lineHeight;
+            let y = (canvas.height - totalHeight) / 2 + lineHeight / 2;
+            for (let line of lines) {
+              ctx.fillText(line, canvas.width / 2, y);
+              y += lineHeight;
+            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const material = new THREE.MeshBasicMaterial({ map: texture });
+            const geometry = new THREE.PlaneGeometry(6, 3);
+            const card = new THREE.Mesh(geometry, material);
+
+            card.position.x = positions[idx];
+            card.position.y = -10;
+            card.position.z = 0;
+
+            const velocity = {
+                x: 0,
+                y: 8 + Math.random() * 3,
+                z: 0,
+                rotationX: 0,
+                rotationY: 0,
+                rotationZ: 0
+            };
+
+            const fruitObject = {
+                mesh: card,
+                velocity: velocity,
+                sliced: false,
+                type: 'answer',
+                answer: option
+            };
+
+            gameState.fruits.push(fruitObject);
+            scene.add(card);
+        });
     } else {
-        xRange = gameState.desktopSpawnRange; // Original range for desktop
+        // Default fruit spawn
+        const fruitIndex = Math.floor(Math.random() * fruitGeometries.length);
+        const fruit = new THREE.Mesh(fruitGeometries[fruitIndex], fruitMaterials[fruitIndex]);
+
+        let xRange = isMobileDevice() ? gameState.mobileSpawnRange : gameState.desktopSpawnRange;
+        fruit.position.x = (Math.random() * xRange) - (xRange / 2);
+        fruit.position.y = -10;
+        fruit.position.z = 0;
+
+        const velocity = {
+            x: (Math.random() - 0.5) * 1.5,
+            y: 10 + Math.random() * 10,
+            z: 0,
+            rotationX: Math.random() * 0.08,
+            rotationY: Math.random() * 0.08,
+            rotationZ: Math.random() * 0.08
+        };
+
+        const fruitObject = {
+            mesh: fruit,
+            velocity: velocity,
+            sliced: false,
+            type: 'fruit'
+        };
+
+        gameState.fruits.push(fruitObject);
+        scene.add(fruit);
     }
-    
-    // Position fruit at a random x position at the bottom of the screen
-    fruit.position.x = (Math.random() * xRange) - (xRange / 2);
-    fruit.position.y = -10;
-    fruit.position.z = 0;
-    
-    // Give the fruit a random velocity
-    const velocity = {
-        x: (Math.random() - 0.5) * 1.5,  // Reduced from 2 to 1.5
-        y: 10 + Math.random() * 10,        // Reduced from 12+5 to 8+3
-        z: 0,
-        rotationX: Math.random() * 0.08,  // Reduced from 0.1 to 0.08
-        rotationY: Math.random() * 0.08,  // Reduced from 0.1 to 0.08
-        rotationZ: Math.random() * 0.08   // Reduced from 0.1 to 0.08
-    };
-    
-    const fruitObject = {
-        mesh: fruit,
-        velocity: velocity,
-        sliced: false,
-        type: 'fruit'
-    };
-    
-    gameState.fruits.push(fruitObject);
-    scene.add(fruit);
 }
 
 // Update game objects
@@ -364,35 +446,49 @@ function updateObjects(deltaTime) {
     gameState.fruits = gameState.fruits.filter(fruit => {
         // Apply gravity
         fruit.velocity.y -= 8.0 * deltaTime; // Reduced from 9.8 to 8.0 (less gravity)
-        
+
         // Update position
         fruit.mesh.position.x += fruit.velocity.x * deltaTime;
         fruit.mesh.position.y += fruit.velocity.y * deltaTime;
         fruit.mesh.position.z += fruit.velocity.z * deltaTime;
-        
+
         // Update rotation
         fruit.mesh.rotation.x += fruit.velocity.rotationX;
         fruit.mesh.rotation.y += fruit.velocity.rotationY;
         fruit.mesh.rotation.z += fruit.velocity.rotationZ;
-        
+
         // Check if fruit is out of screen
         if (fruit.mesh.position.y < -10) {
-            if (!fruit.sliced) {
-                // Missed a fruit
+            if (!fruit.sliced && fruit.type !== 'answer') {
+                // Missed a fruit (only for regular fruits, not quiz answers)
                 gameState.lives--;
                 livesElement.textContent = gameState.lives;
-                
+
                 if (gameState.lives <= 0) {
                     endGame();
                 }
             }
-            
+            // For quiz mode: no penalty for missed cards, they just disappear
+
             scene.remove(fruit.mesh);
             return false;
         }
-        
+
         return true;
     });
+
+    // Continuous flow: if quiz mode and all answer cards have left the screen
+    // without being sliced, auto-advance to the next question
+    if (quizState && quizState.questions && quizState.questions.length > 0 && quizState.answersSpawned) {
+        const remainingAnswerCards = gameState.fruits.filter(f => f.type === 'answer').length;
+        if (remainingAnswerCards === 0 && !quizState.advancing) {
+            quizState.advancing = true;
+            setTimeout(() => {
+                quizState.advancing = false;
+                nextQuestion();
+            }, 100);
+        }
+    }
 }
 
 // Update explosion particles
@@ -449,12 +545,17 @@ function checkCollisions() {
             const dy = fruit.mesh.position.y - fingerY;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
-            // Check for sufficient hand movement speed for slicing
+            // Check for hand collision with card
             const moveSpeed = calculateHandSpeed();
-            const MIN_SLICE_SPEED = 0.04;  // Reduced from 0.1 to 0.05
-            const SLICE_DISTANCE = 5;
+            const MIN_SLICE_SPEED = 0.02;  // Very forgiving
+            const SLICE_DISTANCE = 3.5;    // Easier to hit bigger cards
 
-            if (distance < SLICE_DISTANCE && moveSpeed > MIN_SLICE_SPEED) {  // Increased from 2.5 to 4.0
+            // For quiz mode: much more forgiving collision
+            if (fruit.type === 'answer') {
+                if (distance < 4 && moveSpeed > 0.01) {
+                    sliceFruit(fruit);
+                }
+            } else if (distance < SLICE_DISTANCE && moveSpeed > MIN_SLICE_SPEED) {
                 sliceFruit(fruit);
             }
         }
@@ -473,23 +574,52 @@ function calculateHandSpeed() {
 
 // Handle fruit slicing
 function sliceFruit(fruit) {
-    // Mark as sliced
     fruit.sliced = true;
-    
-    // Create explosion particles
-    createFruitExplosion(fruit);
-    
-    // Increase score
-    gameState.score += 1;
-    scoreElement.textContent = gameState.score;
-    
-    // Remove the original fruit mesh from the scene
-    scene.remove(fruit.mesh);
+
+    if (fruit.type === 'answer' && quizState && quizState.questions.length > 0) {
+        const currentQ = getCurrentQuestion();
+        if (!currentQ) {
+            scene.remove(fruit.mesh);
+            return;
+        }
+
+        // Check answer using quiz function
+        const isCorrect = checkAnswer(fruit.answer);
+
+        if (isCorrect) {
+            createFruitExplosion(fruit, 0x00ff00); // Green for correct
+            scoreElement.textContent = gameState.score;
+            scene.remove(fruit.mesh);
+
+            setTimeout(() => {
+                nextQuestion();
+            }, 50);
+        } else {
+            createFruitExplosion(fruit, 0xff0000); // Red for wrong
+            livesElement.textContent = gameState.lives;
+            scoreElement.textContent = gameState.score;
+            scene.remove(fruit.mesh);
+
+            setTimeout(() => {
+                nextQuestion();
+            }, 50);
+        }
+    } else {
+        gameState.score += 1;
+        scoreElement.textContent = gameState.score;
+        createFruitExplosion(fruit);
+        scene.remove(fruit.mesh);
+    }
 }
 
 // Create explosion effect for sliced fruit
-function createFruitExplosion(fruit) {
-    const fruitColor = fruit.mesh.material.color.getHex();
+function createFruitExplosion(fruit, overrideColor) {
+    let fruitColor = overrideColor;
+    if (!fruitColor && fruit.mesh.material.color) {
+        fruitColor = fruit.mesh.material.color.getHex();
+    } else if (!fruitColor) {
+        fruitColor = 0xffff00; // Yellow default
+    }
     const numParticles = 12; // Number of particles in explosion
     
     for (let i = 0; i < numParticles; i++) {
@@ -571,14 +701,21 @@ function gameLoop(timestamp) {
 
 // Start the game
 function startGame() {
-    // Reset game state
-    gameState.score = 0;
-    gameState.lives = gameState.defaultLives;  // Use default value
+    // If in quiz mode, sync with quiz state
+    if (quizState && quizState.questions && quizState.questions.length > 0) {
+        gameState.score = quizState.score;
+        gameState.lives = quizState.lives;
+        gameState.spawnInterval = 100; // Instant spawn for quiz mode
+    } else {
+        gameState.score = 0;
+        gameState.lives = gameState.defaultLives;
+        gameState.spawnInterval = gameState.defaultSpawnInterval;
+    }
+
     gameState.lastSpawnTime = 0;
-    gameState.spawnInterval = gameState.defaultSpawnInterval;  // Use default value
     gameState.lastFrameTime = 0;
-    gameState.frameCount = 0;  // Reset frame counter
-    
+    gameState.frameCount = 0;
+
     // Clear any existing objects
     gameState.fruits.forEach(fruit => scene.remove(fruit.mesh));
     if (gameState.particles) {
@@ -586,19 +723,20 @@ function startGame() {
     }
     gameState.fruits = [];
     gameState.particles = [];
-    
+
     // Clear blade trails
     gameState.bladeTrails.forEach(trail => trail.element.remove());
     gameState.bladeTrails = [];
-    
+
     // Update UI
     scoreElement.textContent = gameState.score;
     livesElement.textContent = gameState.lives;
-    
-    // Hide start screen
+
+    // Hide start/game-over screens, restore info container
     startScreen.style.display = 'none';
     gameOverScreen.style.display = 'none';
-    
+    document.getElementById('info-container').style.display = 'block';
+
     // Start the game
     gameState.isGameActive = true;
     requestAnimationFrame(gameLoop);
@@ -607,10 +745,35 @@ function startGame() {
 // End the game
 function endGame() {
     gameState.isGameActive = false;
-    
-    // Update final score
+
+    // Sync with quiz state
+    if (quizState && quizState.questions && quizState.questions.length > 0) {
+        quizState.score = gameState.score;
+        quizState.lives = gameState.lives;
+    }
+
+    // Update final score and stats
     finalScoreElement.textContent = gameState.score;
-    
+
+    // Calculate correct answers
+    const correctCount = quizState.answers.filter(a => a.isCorrect).length;
+    document.getElementById('correct-count').textContent = correctCount;
+    document.getElementById('remaining-lives').textContent = Math.max(0, gameState.lives);
+
+    // Show all answer marks
+    const finalMarksEl = document.getElementById('final-answer-marks');
+    finalMarksEl.innerHTML = '';
+    quizState.answers.forEach((answer, idx) => {
+        const mark = document.createElement('span');
+        mark.className = `answer-mark ${answer.isCorrect ? 'correct' : 'wrong'}`;
+        mark.textContent = answer.isCorrect ? '✓' : '✗';
+        mark.style.marginRight = '8px';
+        finalMarksEl.appendChild(mark);
+    });
+
+    // Hide info container so game over screen is clean
+    document.getElementById('info-container').style.display = 'none';
+
     // Show game over screen
     gameOverScreen.style.display = 'flex';
 }

@@ -1,0 +1,117 @@
+═══════════════════════════════════════════════════════════════
+              🍉 QUIZ NINJA — QUICK START GUIDE 🥷
+═══════════════════════════════════════════════════════════════
+
+📍 Location: C:\Users\Veera Prathap\Desktop\Toys\1\quiz-ninja
+
+═══════════════════════════════════════════════════════════════
+                    STEP 1: Start API Proxy
+═══════════════════════════════════════════════════════════════
+
+Open PowerShell/CMD in the quiz-ninja folder, then run:
+
+    /c/Python314/python proxy.py
+
+Expected output:
+    ✨ Quiz Ninja API Proxy running on http://localhost:8001
+       Frontend: http://localhost:8000
+
+⚠️  KEEP THIS TERMINAL OPEN
+
+═══════════════════════════════════════════════════════════════
+              STEP 2: Start Web Server (NEW TERMINAL)
+═══════════════════════════════════════════════════════════════
+
+Open another PowerShell/CMD in the quiz-ninja folder:
+
+    /c/Python314/python -m http.server 8000
+
+Expected output:
+    Serving HTTP on 0.0.0.0 port 8000 (http://0.0.0.0:8000/) ...
+
+⚠️  KEEP THIS TERMINAL OPEN
+
+═══════════════════════════════════════════════════════════════
+                STEP 3: Open in Browser
+═══════════════════════════════════════════════════════════════
+
+Go to:   http://localhost:8000
+
+═══════════════════════════════════════════════════════════════
+                       PLAY THE GAME!
+═══════════════════════════════════════════════════════════════
+
+1. Type a topic:         "Space" / "History" / "Python" / etc.
+2. Click:                "Generate Quiz ✨"
+3. Wait:                 Questions loading (2-3 seconds)
+4. Enable webcam:        Allow camera permission
+5. Click:                "Start"
+6. Slice the cards:      Move your hand to slice correct answers
+
+   ✅ Green explosion = Correct answer (+100 points)
+   ❌ Red explosion   = Wrong answer (-1 life)
+
+═══════════════════════════════════════════════════════════════
+                    DEMO TOPICS TO TRY
+═══════════════════════════════════════════════════════════════
+
+✓ World Capitals        ✓ Python Programming
+✓ Ancient Rome          ✓ Space Exploration
+✓ Shakespeare Plays     ✓ Cricket Rules
+✓ Nobel Prize Winners   ✓ Harry Potter
+✓ Marvel Movies         ✓ Plant Biology
+
+═══════════════════════════════════════════════════════════════
+                     CURRENT SETUP
+═══════════════════════════════════════════════════════════════
+
+✅ API Key:             Hardcoded (Groq key - gsk_...)
+✅ Proxy:               Running on port 8001
+✅ Frontend:            Running on port 8000
+✅ AI Model:            Mixtral 8x7B (fast responses)
+✅ Questions:           10 per quiz
+✅ Starting Lives:      3
+
+═══════════════════════════════════════════════════════════════
+                   TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+Problem: "Failed to generate quiz"
+→ Check proxy is running (/c/Python314/python proxy.py)
+→ Check web server running (/c/Python314/python -m http.server 8000)
+→ Check http://localhost:8001 responds
+
+Problem: "Hand tracking not working"
+→ Allow camera permission in browser
+→ Ensure good lighting
+→ Move hand clearly in front of camera
+
+Problem: "No cards spawning"
+→ Open browser console (F12)
+→ Check for JavaScript errors
+→ Refresh page (Ctrl+R)
+
+═══════════════════════════════════════════════════════════════
+                   WHAT EACH FILE DOES
+═══════════════════════════════════════════════════════════════
+
+index.html    → Main UI (quiz input, game canvas, score display)
+game.js       → 3D rendering, physics, collision detection
+quiz.js       → AI integration, quiz state management
+proxy.py      → Backend API proxy (Groq/Anthropic)
+styles.css    → Retro neon styling
+readme.md     → Full documentation
+SETUP.md      → Detailed setup guide
+
+═══════════════════════════════════════════════════════════════
+                     NEXT STEPS
+═══════════════════════════════════════════════════════════════
+
+NOW:   Run proxy.py (terminal 1)
+THEN:  Run http.server (terminal 2)
+THEN:  Open http://localhost:8000
+THEN:  Type topic → Click Generate → Play!
+
+═══════════════════════════════════════════════════════════════
+
+Made with 💜 for the hackathon. Have fun! 🍉🥷
