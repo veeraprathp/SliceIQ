@@ -20,22 +20,31 @@
             <div id="game-question-display"></div>
         </div>
 
-        <!-- Topic Screen -->
+        <!-- Setup Screen -->
         <div id="topic-screen">
             <h1>🍉 Quiz Ninja 🥷</h1>
-            <p>Universal AI Quiz + Hand Gesture Slicing</p>
-            <div id="topic-input-container">
-                <select id="model-select" style="padding: 10px; background: #000; color: #00ffff; border: 2px solid #00ffff; font-family: monospace;">
+            
+            <!-- Step 1: API Setup -->
+            <div id="setup-step-1">
+                <p>Step 1: Setup your AI 🧠</p>
+                <select id="model-select" style="width: 100%; padding: 10px; margin-bottom: 10px; background: #000; color: #00ffff; border: 2px solid #00ffff; font-family: monospace;">
                     <option value="groq/mixtral-8x7b-32768">Groq Mixtral (Fastest)</option>
                     <option value="groq/llama3-70b-8192">Groq Llama 3 (Smartest)</option>
                     <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                     <option value="gemini/gemini-pro">Google Gemini Pro</option>
                 </select>
-                <input type="password" id="api-key-input" placeholder="Enter API Key (Groq/Claude/OpenAI)..." style="margin-bottom: 10px; padding: 10px; background: #000; color: #ff00ff; border: 2px solid #ff00ff; font-family: monospace;" />
-                <input type="text" id="topic-input" placeholder="Enter topic... (e.g., Space, Cricket)" />
-                <button id="generate-btn">Generate Quiz ✨</button>
-                <p id="loading-text" style="display:none;">Generating questions...</p>
+                <input type="password" id="api-key-input" placeholder="Enter API Key..." style="width: 100%; margin-bottom: 10px; padding: 10px; background: #000; color: #ff00ff; border: 2px solid #ff00ff; font-family: monospace;" />
+                <button id="next-btn" class="menu-btn">Next ➔</button>
+            </div>
+
+            <!-- Step 2: Topic Selection -->
+            <div id="setup-step-2" style="display:none;">
+                <p>Step 2: Choose your Topic 📚</p>
+                <input type="text" id="topic-input" placeholder="Enter topic... (e.g., Space, Cricket)" style="width: 100%; margin-bottom: 10px; padding: 10px;" />
+                <button id="generate-btn" class="menu-btn">Generate Quiz ✨</button>
+                <button id="back-btn" style="background: transparent; border: none; color: #666; cursor: pointer; margin-top: 10px;">⬅ Back to API Settings</button>
+                <p id="loading-text" style="display:none; color: #00ffff; margin-top: 10px;">Generating questions...</p>
             </div>
         </div>
 

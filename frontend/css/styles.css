@@ -45,7 +45,7 @@ a:visited {
     left: 50vw;
     width: 50vw;
     height: 100vh;
-    background-image: url('../../assets/background2.png');
+    background-image: url('/assets/background2.png');
     background-size: cover;
     background-position: center;
     z-index: 0;

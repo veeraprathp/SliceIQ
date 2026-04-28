@@ -105,8 +105,25 @@ function nextQuestion() {
   }
 }
 
+// Bind navigation buttons
+document.getElementById("next-btn").addEventListener("click", () => {
+    const key = document.getElementById("api-key-input").value.trim();
+    if (!key && !localStorage.getItem("sliceiq_api_key")) {
+        alert("Please enter an API key to continue!");
+        return;
+    }
+    document.getElementById("setup-step-1").style.display = "none";
+    document.getElementById("setup-step-2").style.display = "block";
+});
+
+document.getElementById("back-btn").addEventListener("click", () => {
+    document.getElementById("setup-step-2").style.display = "none";
+    document.getElementById("setup-step-1").style.display = "block";
+});
+
 // Bind generate button
 document.getElementById("generate-btn").addEventListener("click", () => {
     const topic = document.getElementById("topic-input").value.trim();
     if (topic) generateQuiz(topic);
+    else alert("Please enter a topic!");
 });
