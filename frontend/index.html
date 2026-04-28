@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🍉 Quiz Ninja | AI Slicing Game</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div id="game-container">
+        <div id="background"></div>
+        <canvas id="game-canvas"></canvas>
+        <video id="video" playsinline></video>
+        <canvas id="hand-canvas"></canvas>
+        
+        <div id="info-container">
+            <div id="score-container">Score: <span id="score">0</span></div>
+            <div id="lives-container">Lives: <span id="lives">10</span></div>
+            <div id="feedback-container"></div>
+            <div id="game-question-display"></div>
+        </div>
+
+        <!-- Topic Screen -->
+        <div id="topic-screen">
+            <h1>🍉 Quiz Ninja 🥷</h1>
+            <p>Universal AI Quiz + Hand Gesture Slicing</p>
+            <div id="topic-input-container">
+                <select id="model-select" style="padding: 10px; background: #000; color: #00ffff; border: 2px solid #00ffff; font-family: monospace;">
+                    <option value="groq/mixtral-8x7b-32768">Groq Mixtral (Fastest)</option>
+                    <option value="groq/llama3-70b-8192">Groq Llama 3 (Smartest)</option>
+                    <option value="claude-3-haiku-20240307">Claude 3 Haiku</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="gemini/gemini-pro">Google Gemini Pro</option>
+                </select>
+                <input type="text" id="topic-input" placeholder="Enter topic... (e.g., Space, Cricket)" />
+                <button id="generate-btn">Generate Quiz ✨</button>
+                <p id="loading-text" style="display:none;">Generating questions...</p>
+            </div>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" style="display:none;">
+            <h1>✋ Ready? 🥷</h1>
+            <p id="question-display"></p>
+            <button id="start-button">Start Game</button>
+        </div>
+        
+        <div id="game-over">
+            <h1>Game Over</h1>
+            <p>Score: <span id="final-score">0</span></p>
+            <button id="restart-button">Play Again</button>
+        </div>
+        
+        <div id="loading">
+            <h2>Loading...</h2>
+        </div>
+    </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+<script src="js/quiz.js"></script>
+<script src="js/game.js"></script>
+</html>
