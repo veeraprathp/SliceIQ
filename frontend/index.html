@@ -32,6 +32,7 @@
                     <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
                     <option value="gemini/gemini-pro">Google Gemini Pro</option>
                 </select>
+                <input type="password" id="api-key-input" placeholder="Enter API Key (Groq/Claude/OpenAI)..." style="margin-bottom: 10px; padding: 10px; background: #000; color: #ff00ff; border: 2px solid #ff00ff; font-family: monospace;" />
                 <input type="text" id="topic-input" placeholder="Enter topic... (e.g., Space, Cricket)" />
                 <button id="generate-btn">Generate Quiz ✨</button>
                 <p id="loading-text" style="display:none;">Generating questions...</p>
@@ -48,6 +49,11 @@
         <div id="game-over">
             <h1>Game Over</h1>
             <p>Score: <span id="final-score">0</span></p>
+            <div id="stats" style="margin: 20px 0; font-family: monospace; color: #00ffff;">
+                <p>Correct Slices: <span id="correct-count">0</span></p>
+                <p>Lives Left: <span id="remaining-lives">0</span></p>
+                <div id="final-answer-marks" style="font-size: 24px; margin-top: 10px;"></div>
+            </div>
             <button id="restart-button">Play Again</button>
         </div>
         
