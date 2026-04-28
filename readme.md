@@ -3,7 +3,7 @@
 Fruit Ninja meets AI. Type any topic → AI generates quiz questions → answers fly as cards → slice the correct one with your hand.
 
 ## 🎬 Project Explanation Video
-<video src="assets/20260428-1833-23.5516495.mp4" width="100%" autoplay loop muted controls></video>
+![Demo Video](assets/demo.mp4)
 
 **Base:** Forked from [collidingScopes/fruit-ninja](https://github.com/collidingScopes/fruit-ninja)
 
